@@ -337,71 +337,22 @@
             const vecaks = document.getElementById('vecaks_pilns').value.replace(/,/g, ' ');
             const berns = document.getElementById('berns_pilns').value.replace(/,/g, ' ');
             const talrunis = document.getElementById('talrunis').value.replace(/,/g, ' ');
-            // ... pārējos laukus ...
-            const newRow = `${vecaks},${berns},${talrunis}`; // papildini ar pārējiem laukiem
-            await appendToCSV(newRow);
-            this.reset();
-        });
-        // document.getElementById('pieteikumaForma').addEventListener('submit', function (e) {
-        //     e.preventDefault();
-        //     // Iegūst apvienotos laukus
-        //     const vecaksPilns = document.getElementById('vecaks_pilns').value.trim();
-        //     const bernsPilns = document.getElementById('berns_pilns').value.trim();
-        //     // Ja nepieciešams, šeit var veikt validāciju vai datu apstrādi
-
-        //     // Parāda veiksmes ziņu un atiestata formu
-        //     document.getElementById('successMsg').style.display = 'block';
-        //     this.reset();
-        //     document.getElementById('pulciniContainer').innerHTML = '';
-        //     pulcinsCount = 0;
-        //     addPulcins();
-        //     updateAllDays();
-        //     document.getElementById('descContent').textContent = '';
-        // });
-
-
-        // DATU SŪTĪŠANA UZ GITHUB EvaldsA/int_izgl/tree
-        // Aizvieto ar saviem datiem:
-        const GITHUB_TOKEN = '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';
-        const REPO_OWNER = 'EvaldsA';
-        const REPO_NAME = 'int_izgl';
-        const BRANCH = 'main';
-        const FILE_PATH = 'atbildes.csv';
-
-        // Funkcija, kas pievieno jaunu rindu CSV failam
-        async function appendToCSV(newRow) {
-            // 1. Nolasām esošo failu
-            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`;
-            const headers = { Authorization: `token ${GITHUB_TOKEN}` };
-            const res = await fetch(url, { headers });
-            const data = await res.json();
-            const content = atob(data.content.replace(/\\n/g, ''));
-            const sha = data.sha;
-
-            // 2. Pievienojam jaunu rindu
-            const updatedContent = content + '\\n' + newRow;
-
-            // 3. Augšupielādējam atpakaļ
-            const putRes = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    Authorization: `token ${GITHUB_TOKEN}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: 'Pievienota jauna atbilde',
-                    content: btoa(updatedContent),
-                    sha: sha,
-                    branch: BRANCH
-                })
+            // Iegūsti izvēlētos pulciņus
+            const selects = document.querySelectorAll('.pulcinsSelect');
+            const pulcini = Array.from(selects).map(sel => sel.value).join(',');
+            const newRow = `${vecaks},${berns},${talrunis},${pulcini}`; // utt.
+            const res = await fetch('/.netlify/functions/append-csv', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ newRow })
             });
-
-            if (putRes.ok) {
+            if (res.ok) {
                 alert('Atbilde pievienota!');
             } else {
                 alert('Kļūda saglabājot atbildi!');
             }
-        }
+            this.reset();
+        });
     </script>
 </body>
 

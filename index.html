@@ -340,7 +340,9 @@
             // Iegūsti izvēlētos pulciņus
             const selects = document.querySelectorAll('.pulcinsSelect');
             const pulcini = Array.from(selects).map(sel => sel.value).join(',');
-            const newRow = `${vecaks},${berns},${talrunis},${pulcini}`; // utt.
+            const personasKods = document.getElementById('personas_kods').value.replace(/,/g, ' ');
+            const papildus = document.getElementById('papildus').value.replace(/,/g, ' ');
+            const newRow = `${vecaks},${berns},${personasKods},${talrunis},${pulcini},${papildus}`;
             const res = await fetch('/.netlify/functions/append-csv', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

@@ -62,6 +62,7 @@
             color: #2a4d69;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
         }
+
         .day-label {
             font-size: 16px;
             font-weight: bold;
@@ -69,11 +70,13 @@
             margin-bottom: 6px;
             display: block;
         }
+
         .pulcins-label {
             font-weight: normal;
             color: #2a4d69;
             margin-bottom: 2px;
             display: block;
+            margin-top: 1px;
         }
 
         h2 {
@@ -96,14 +99,22 @@
             border: 1px solid #bfc9d1;
             border-radius: 4px;
             box-sizing: border-box;
+            margin-bottom: 10px;
         }
 
         .pulcins-group {
             border: 1px solid #eaf1fb;
             border-radius: 6px;
             padding: 10px 10px 0 10px;
-            margin-bottom: 10px;
+            margin-bottom: 3px;
             background: #f8fbff;
+        }
+
+        .pulcinsSelect {
+            width: calc(90% - 90px);
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
         }
 
         .remove-pulcins {
@@ -188,17 +199,11 @@
         <div class="container">
             <h2>Pieteikums interešu izglītības programmām</h2>
             <form id="pieteikumaForma">
-                <label for="vecaks_vards">Vecāka vārds:</label>
-                <input type="text" id="vecaks_vards" name="vecaks_vards" required>
+                <label for="vecaks_pilns">Vecāka vārds, uzvārds:</label>
+                <input type="text" id="vecaks_pilns" name="vecaks_pilns" placeholder="Piem. Anna Liepa" required>
 
-                <label for="vecaks_uzvards">Vecāka uzvārds:</label>
-                <input type="text" id="vecaks_uzvards" name="vecaks_uzvards" required>
-
-                <label for="berns_vards">Bērna vārds:</label>
-                <input type="text" id="berns_vards" name="berns_vards" required>
-
-                <label for="berns_uzvards">Bērna uzvārds:</label>
-                <input type="text" id="berns_uzvards" name="berns_uzvards" required>
+                <label for="berns_pilns">Bērna vārds, uzvārds:</label>
+                <input type="text" id="berns_pilns" name="berns_pilns" placeholder="Piem. Jānis Liepa" required>
 
                 <label for="personas_kods">Bērna personas kods:</label>
                 <input type="text" id="personas_kods" name="personas_kods" pattern="[0-9]{6}-[0-9]{5}"
@@ -260,7 +265,7 @@
         // Pulciņu izvēles lauks ar apraksta atjaunošanu
         function pulcinsSelectHTML(idx) {
             return `<div class="pulcins-group">
-				<label>Pulciņš:</label>
+				<label class="pulcins-label">Pulciņš:</label>
 				<select name="pulcins_${idx}" class="pulcinsSelect" required onchange="updateDescAndDays(this, ${idx})">
 					<option value="">--Izvēlieties--</option>
 					<option value="tautas_dejas">Tautas dejas</option>
@@ -326,16 +331,77 @@
             updateAllDays();
         };
 
-        document.getElementById('pieteikumaForma').addEventListener('submit', function (e) {
+        document.getElementById('pieteikumaForma').addEventListener('submit', async function (e) {
             e.preventDefault();
-            document.getElementById('successMsg').style.display = 'block';
+            // Iegūsti laukus, piemēram:
+            const vecaks = document.getElementById('vecaks_pilns').value.replace(/,/g, ' ');
+            const berns = document.getElementById('berns_pilns').value.replace(/,/g, ' ');
+            const talrunis = document.getElementById('talrunis').value.replace(/,/g, ' ');
+            // ... pārējos laukus ...
+            const newRow = `${vecaks},${berns},${talrunis}`; // papildini ar pārējiem laukiem
+            await appendToCSV(newRow);
             this.reset();
-            document.getElementById('pulciniContainer').innerHTML = '';
-            pulcinsCount = 0;
-            addPulcins();
-            updateAllDays();
-            document.getElementById('descContent').textContent = '';
         });
+        // document.getElementById('pieteikumaForma').addEventListener('submit', function (e) {
+        //     e.preventDefault();
+        //     // Iegūst apvienotos laukus
+        //     const vecaksPilns = document.getElementById('vecaks_pilns').value.trim();
+        //     const bernsPilns = document.getElementById('berns_pilns').value.trim();
+        //     // Ja nepieciešams, šeit var veikt validāciju vai datu apstrādi
+
+        //     // Parāda veiksmes ziņu un atiestata formu
+        //     document.getElementById('successMsg').style.display = 'block';
+        //     this.reset();
+        //     document.getElementById('pulciniContainer').innerHTML = '';
+        //     pulcinsCount = 0;
+        //     addPulcins();
+        //     updateAllDays();
+        //     document.getElementById('descContent').textContent = '';
+        // });
+
+
+        // DATU SŪTĪŠANA UZ GITHUB EvaldsA/int_izgl/tree
+        // Aizvieto ar saviem datiem:
+        const GITHUB_TOKEN = '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';
+        const REPO_OWNER = 'EvaldsA';
+        const REPO_NAME = 'int_izgl';
+        const BRANCH = 'main';
+        const FILE_PATH = 'atbildes.csv';
+
+        // Funkcija, kas pievieno jaunu rindu CSV failam
+        async function appendToCSV(newRow) {
+            // 1. Nolasām esošo failu
+            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`;
+            const headers = { Authorization: `token ${GITHUB_TOKEN}` };
+            const res = await fetch(url, { headers });
+            const data = await res.json();
+            const content = atob(data.content.replace(/\\n/g, ''));
+            const sha = data.sha;
+
+            // 2. Pievienojam jaunu rindu
+            const updatedContent = content + '\\n' + newRow;
+
+            // 3. Augšupielādējam atpakaļ
+            const putRes = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `token ${GITHUB_TOKEN}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: 'Pievienota jauna atbilde',
+                    content: btoa(updatedContent),
+                    sha: sha,
+                    branch: BRANCH
+                })
+            });
+
+            if (putRes.ok) {
+                alert('Atbilde pievienota!');
+            } else {
+                alert('Kļūda saglabājot atbildi!');
+            }
+        }
     </script>
 </body>
 

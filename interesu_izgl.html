@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="lv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interešu izglītības pieteikums</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-flex {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .desc-panel {
+            width: 260px;
+            background: #eaf1fb;
+            border-radius: 10px;
+            margin: 40px 20px 0 0;
+            padding: 20px 18px;
+            min-height: 350px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+            color: #2a4d69;
+        }
+
+        .container {
+            max-width: 520px;
+            width: 100%;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px 40px;
+            margin: 40px 0 0 0;
+        }
+
+        .top-days {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin: 40px 0 0 20px;
+            min-width: 120px;
+            position: static;
+        }
+
+        .day-box {
+            background: #eaf1fb;
+            border: 1px solid #12171b;
+            border-radius: 6px;
+            padding: 10px 12px;
+            min-width: 90px;
+            min-height: 60px;
+            text-align: center;
+            font-size: 15px;
+            color: #2a4d69;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+        }
+        .day-label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #18305c;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .pulcins-label {
+            font-weight: normal;
+            color: #2a4d69;
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2a4d69;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            color: #2a4d69;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #bfc9d1;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .pulcins-group {
+            border: 1px solid #eaf1fb;
+            border-radius: 6px;
+            padding: 10px 10px 0 10px;
+            margin-bottom: 10px;
+            background: #f8fbff;
+        }
+
+        .remove-pulcins {
+            background: #e57373;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 10px;
+            margin-top: 5px;
+            cursor: pointer;
+            float: right;
+        }
+
+        button[type="button"] {
+            background: #2a4d69;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        button[type="button"]:hover {
+            background: #376996;
+        }
+
+        button[type="submit"] {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background: #2a4d69;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button[type="submit"]:hover {
+            background: #376996;
+        }
+
+        .success {
+            color: green;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 900px) {
+            .main-flex {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .desc-panel {
+                margin: 20px auto 0 auto;
+            }
+
+            .container {
+                margin: 20px auto 0 auto;
+            }
+
+            .top-days {
+                flex-direction: row;
+                justify-content: center;
+                margin: 20px auto 0 auto;
+                min-width: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-flex">
+        <div class="desc-panel" id="descPanel">
+            <b>Izvēlieties pulciņu, lai redzētu aprakstu.</b>
+            <div id="descContent" style="margin-top:10px;"></div>
+        </div>
+        <div class="container">
+            <h2>Pieteikums interešu izglītības programmām</h2>
+            <form id="pieteikumaForma">
+                <label for="vecaks_vards">Vecāka vārds:</label>
+                <input type="text" id="vecaks_vards" name="vecaks_vards" required>
+
+                <label for="vecaks_uzvards">Vecāka uzvārds:</label>
+                <input type="text" id="vecaks_uzvards" name="vecaks_uzvards" required>
+
+                <label for="berns_vards">Bērna vārds:</label>
+                <input type="text" id="berns_vards" name="berns_vards" required>
+
+                <label for="berns_uzvards">Bērna uzvārds:</label>
+                <input type="text" id="berns_uzvards" name="berns_uzvards" required>
+
+                <label for="personas_kods">Bērna personas kods:</label>
+                <input type="text" id="personas_kods" name="personas_kods" pattern="[0-9]{6}-[0-9]{5}"
+                    placeholder="123456-12345" required>
+
+                <label for="talrunis">Vecāka telefona nr.:</label>
+                <input type="tel" id="talrunis" name="talrunis" pattern="[0-9\+\- ]{8,}" placeholder="2xxxxxxx"
+                    required>
+
+                <div id="pulciniContainer">
+                    <!-- Pulciņu grupas tiks pievienotas šeit -->
+                </div>
+                <button type="button" onclick="addPulcins()">Pievienot vēl vienu pulciņu</button>
+
+                <label for="papildus">Papildus informācija (nav obligāti):</label>
+                <textarea id="papildus" name="papildus" rows="3"></textarea>
+
+                <button type="submit">Pieteikt</button>
+            </form>
+            <div class="success" id="successMsg" style="display:none;">Pieteikums veiksmīgi nosūtīts!</div>
+        </div>
+        <div class="top-days" id="topDays">
+            <div class="day-box" id="day1">Pirmdiena</div>
+            <div class="day-box" id="day2">Otrdiena</div>
+            <div class="day-box" id="day3">Trešdiena</div>
+            <div class="day-box" id="day4">Ceturtdiena</div>
+            <div class="day-box" id="day5">Piektdiena</div>
+        </div>
+    </div>
+    <script>
+        // Pulciņu apraksti un laiki
+        const pulciniData = {
+            'tautas_dejas': {
+                apraksts: 'Tautas deju pulciņš – latviešu deju tradīcijas, ritms, kustību prieks. Vadītāja: Inese Kalniņa.',
+                laiki: { 'Pirmdiena': '16:00-17:00', 'Trešdiena': '16:00-17:00' }
+            },
+            'ansamblis': {
+                apraksts: 'Ansamblis – dziedāšana, uzstāšanās, radošums. Vadītāja: Jānis Ozols.',
+                laiki: { 'Otrdiena': '15:30-16:30', 'Ceturtdiena': '15:30-16:30' }
+            },
+            'modernas_dejas': {
+                apraksts: 'Modernās dejas – mūsdienu deju stili, kustību brīvība. Vadītāja: Līga Liepa.',
+                laiki: { 'Piektdiena': '16:00-17:30' }
+            },
+            'saha_pulcins': {
+                apraksts: 'Šaha pulciņš – stratēģija, domāšana, sacensības. Vadītājs: Edgars Bērziņš.',
+                laiki: { 'Trešdiena': '15:00-16:00', 'Piektdiena': '15:00-16:00' }
+            },
+            'keramikas_pulcins': {
+                apraksts: 'Keramikas pulciņš – radošums, darbs ar mālu, mākslas izpausme. Vadītāja: Ilze Siliņa.',
+                laiki: { 'Otrdiena': '16:00-17:30' }
+            },
+            'cits': {
+                apraksts: 'Cits pulciņš – lūdzu, norādiet papildus informācijā.',
+                laiki: {}
+            }
+        };
+
+        // Pulciņu izvēles lauks ar apraksta atjaunošanu
+        function pulcinsSelectHTML(idx) {
+            return `<div class="pulcins-group">
+				<label>Pulciņš:</label>
+				<select name="pulcins_${idx}" class="pulcinsSelect" required onchange="updateDescAndDays(this, ${idx})">
+					<option value="">--Izvēlieties--</option>
+					<option value="tautas_dejas">Tautas dejas</option>
+					<option value="ansamblis">Ansamblis</option>
+					<option value="modernas_dejas">Modernās dejas</option>
+					<option value="saha_pulcins">Šaha pulciņš</option>
+					<option value="keramikas_pulcins">Keramikas pulciņš</option>
+					<option value="cits">Cits</option>
+				</select>
+				<button type="button" class="remove-pulcins" onclick="removePulcins(this)">Noņemt</button>
+			</div>`;
+        }
+
+        let pulcinsCount = 0;
+        function addPulcins() {
+            const container = document.getElementById('pulciniContainer');
+            container.insertAdjacentHTML('beforeend', pulcinsSelectHTML(pulcinsCount));
+            pulcinsCount++;
+        }
+        function removePulcins(btn) {
+            btn.parentElement.remove();
+            updateAllDays();
+        }
+
+        // Apraksta un dienu lauku atjaunošana
+        function updateDescAndDays(select, idx) {
+            const val = select.value;
+            const descPanel = document.getElementById('descContent');
+            if (pulciniData[val]) {
+                descPanel.textContent = pulciniData[val].apraksts;
+            } else {
+                descPanel.textContent = '';
+            }
+            updateAllDays();
+        }
+
+        function updateAllDays() {
+            // Notīra dienu lauciņus
+            const days = ['Pirmdiena', 'Otrdiena', 'Trešdiena', 'Ceturtdiena', 'Piektdiena'];
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById('day' + i).innerHTML = `<span class="day-label">${days[i - 1]}</span>`;
+            }
+            // Atrod visus izvēlētos pulciņus un sadala pa dienām
+            const selects = document.querySelectorAll('.pulcinsSelect');
+            selects.forEach(sel => {
+                const val = sel.value;
+                if (pulciniData[val]) {
+                    const laiki = pulciniData[val].laiki;
+                    for (const [diena, laiks] of Object.entries(laiki)) {
+                        const idx = days.indexOf(diena);
+                        if (idx !== -1) {
+                            document.getElementById('day' + (idx + 1)).innerHTML += `<span class=\"pulcins-label\">${sel.options[sel.selectedIndex].text}</span><span style='font-size:13px;color:#376996;display:block;margin-bottom:4px;'>${laiks}</span>`;
+                        }
+                    }
+                }
+            });
+        }
+
+        // Sākotnēji viens pulciņš
+        window.onload = function () {
+            addPulcins();
+            // Uzreiz izsauc updateAllDays, lai dienu nosaukumi būtu ar jauno stilu jau sākumā
+            updateAllDays();
+        };
+
+        document.getElementById('pieteikumaForma').addEventListener('submit', function (e) {
+            e.preventDefault();
+            document.getElementById('successMsg').style.display = 'block';
+            this.reset();
+            document.getElementById('pulciniContainer').innerHTML = '';
+            pulcinsCount = 0;
+            addPulcins();
+            updateAllDays();
+            document.getElementById('descContent').textContent = '';
+        });
+    </script>
+</body>
+
+</html>

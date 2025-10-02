@@ -5,28 +5,31 @@ exports.handler = async function(event, context) {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  // Datus sagaida JSON formā
   const { newRow } = JSON.parse(event.body);
 
-  // Šos datus glabā Netlify ENV mainīgajos, nevis kodā!
   const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
   const REPO_OWNER = 'EvaldsA';
   const REPO_NAME = 'int_izgl';
   const BRANCH = 'main';
   const FILE_PATH = 'atbildes.csv';
 
-  // 1. Nolasām esošo failu
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`;
   const headers = { Authorization: `token ${GITHUB_TOKEN}` };
   const res = await fetch(url, { headers });
   const data = await res.json();
+
+  // Izvērsta pārbaude un kļūdu atgriešana
+  if (!data.content) {
+    return {
+      statusCode: 500,
+      body: 'GitHub API error: ' + JSON.stringify(data)
+    };
+  }
+
   const content = Buffer.from(data.content, 'base64').toString('utf-8');
   const sha = data.sha;
-
-  // 2. Pievienojam jaunu rindu
   const updatedContent = content + '\n' + newRow;
 
-  // 3. Augšupielādējam atpakaļ
   const putRes = await fetch(url, {
     method: 'PUT',
     headers: {
@@ -44,6 +47,7 @@ exports.handler = async function(event, context) {
   if (putRes.ok) {
     return { statusCode: 200, body: 'OK' };
   } else {
-    return { statusCode: 500, body: 'Kļūda saglabājot atbildi!' };
+    const errorText = await putRes.text();
+    return { statusCode: 500, body: 'GitHub PUT error: ' + errorText };
   }
 };

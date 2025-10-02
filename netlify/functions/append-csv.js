@@ -18,7 +18,10 @@ exports.handler = async function(event, context) {
   const res = await fetch(url, { headers });
   const data = await res.json();
 
-  // Izvērsta pārbaude un kļūdu atgriešana
+  // LOGO API atbildi kļūdu diagnosticēšanai
+  console.log('GitHub API response:', JSON.stringify(data));
+
+  // Ja nav content, atgriež kļūdu ar pilnu API atbildi
   if (!data.content) {
     return {
       statusCode: 500,
